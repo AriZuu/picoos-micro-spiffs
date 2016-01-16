@@ -83,6 +83,11 @@ static void flashCs(spiflash_t * spi, uint8_t cs)
 {
   UosFlashDev* dev = (UosFlashDev*)spi->user_data;
 
+/*
+ * Remember CS line state because the generic driver
+ * seems to issue multiple calls to deassert CS.
+ * Picoos-micro spibus functions don't like that at all.
+ */
   if (cs) {
 
     if (!dev->haveCs) {

@@ -64,6 +64,9 @@ extern "C"
  * @{
  */
 
+/**
+ * Config settings for generic flash chip driver.
+ */
 typedef struct {
 
   UosSpiDevConf base;
@@ -73,14 +76,24 @@ typedef struct {
   } spiflash;
 } UosFlashConf;
 
+/**
+ * Handle for flash chip.
+ */
 typedef struct {
   UosSpiDev base;
   spiflash_t spif;
   bool haveCs;
 } UosFlashDev;
 
+/**
+ * Initialize flash chip driver. Must be done before chip is 
+ * mounted or otherwise used by SPIFFS.
+ */
 void uosFlashInit(UosFlashDev* dev, const UosFlashConf* cf, UosSpiBus* bus);
 
+/**
+ * Mount SPIFFS filesystem.
+ */
 int uosMountSpiffs(const char* mountPoint, UosFlashDev* dev, spiffs_config* cfg);
 
 /** @} */
