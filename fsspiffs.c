@@ -189,8 +189,6 @@ static int spiffsInit(const UosFS* fs)
                          cacheBufSize,
                          0);
 
-  printf("mount res: %" PRId32 "\n", m->fs.err_code);
-
   if (res == -1 && m->fs.err_code == SPIFFS_ERR_NOT_A_FS) {
 
     printf("spiffs: formatting required\n");
@@ -207,11 +205,11 @@ static int spiffsInit(const UosFS* fs)
                        cacheBufSize,
                        0);
 
-    printf("re-mount res: %d errcode %" PRId32 "\n", res, m->fs.err_code);
   }
 
   if (res == -1) {
 
+    printf("Spiffs mount error: %" PRId32 "\n", m->fs.err_code);
     errno = EIO;
     return -1;
   }
@@ -219,7 +217,11 @@ static int spiffsInit(const UosFS* fs)
   uint32_t total, used;
 
   res = SPIFFS_info(&m->fs, &total, &used);
-  printf("info res %d, total %" PRIu32 ", used %" PRIu32 "\n", res, total, used);
+  if (res == 0)
+    printf("Spiffs mounted. Total size %" PRIu32 ", used %" PRIu32 "\n", total, used);
+  else
+    printf("SPIFFS_info failure.");
+
   return 0;
 }
 
