@@ -230,7 +230,9 @@ int uosMountSpiffs(const char* mountPoint, UosFlashDev* dev, spiffs_config* cfg)
   int slot = UOS_BITTAB_ALLOC(mountedFs);
   if (slot == -1) {
 
+#if NOSCFG_FEATURE_PRINTF
     nosPrintf("spiffs: mount table full\n");
+#endif
     errno = ENOSPC;
     return -1;
   }
