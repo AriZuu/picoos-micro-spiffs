@@ -109,14 +109,14 @@ void uosSpiffsMutexLock(spiffs* fsImpl)
 {
   SpiFS* fs = (SpiFS*)fsImpl->user_data;
 
-  posMutexLock(fs->lock);
+  nosMutexLock(fs->lock);
 }
 
 void uosSpiffsMutexUnlock(spiffs* fsImpl)
 {
   SpiFS* fs = (SpiFS*)fsImpl->user_data;
 
-  posMutexUnlock(fs->lock);
+  nosMutexUnlock(fs->lock);
 }
 
 /* 
@@ -172,7 +172,7 @@ static int spiffsInit(const UosFS* fs)
   m->cacheBuf = malloc(cacheBufSize);
   m->fdBuf = malloc(fdBufSize);
 
-  m->lock = posMutexCreate();
+  m->lock = nosMutexCreate(0, "spiffs*");
 
   m->fs.user_data = (void*)fs;
 
