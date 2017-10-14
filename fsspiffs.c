@@ -331,6 +331,9 @@ static int spiffsRead(UosFile* file, char *buf, int len)
   int retLen;
 
   retLen = SPIFFS_read(&m->fs, fd, buf, len);
+  if (retLen == -1 && m->fs.err_code == SPIFFS_ERR_END_OF_OBJECT)
+    return 0;
+
   if (retLen == -1) {
 
     errno = EIO;
