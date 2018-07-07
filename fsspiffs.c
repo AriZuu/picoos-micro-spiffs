@@ -220,7 +220,7 @@ static int spiffsInit(const UosFS* fs)
   if (res == 0)
     printf("Spiffs mounted. Total size %" PRIu32 ", used %" PRIu32 "\n", total, used);
   else
-    printf("SPIFFS_info failure.");
+    printf("SPIFFS_info failure %" PRId32 "\n", res);
 
   return 0;
 }
