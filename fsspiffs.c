@@ -189,7 +189,7 @@ static int spiffsInit(const UosFS* fs)
                          cacheBufSize,
                          0);
 
-  if (res == -1 && m->fs.err_code == SPIFFS_ERR_NOT_A_FS) {
+  if (res == SPIFFS_ERR_NOT_A_FS) {
 
     printf("spiffs: formatting required\n");
 
@@ -207,7 +207,7 @@ static int spiffsInit(const UosFS* fs)
 
   }
 
-  if (res == -1) {
+  if (res < 0) {
 
     printf("Spiffs mount error: %" PRId32 "\n", m->fs.err_code);
     errno = EIO;
@@ -217,7 +217,7 @@ static int spiffsInit(const UosFS* fs)
   uint32_t total, used;
 
   res = SPIFFS_info(&m->fs, &total, &used);
-  if (res == 0)
+  if (res >= 0)
     printf("Spiffs mounted. Total size %" PRIu32 ", used %" PRIu32 "\n", total, used);
   else
     printf("SPIFFS_info failure %" PRId32 "\n", res);
@@ -331,7 +331,7 @@ static int spiffsRead(UosFile* file, char *buf, int len)
   int retLen;
 
   retLen = SPIFFS_read(&m->fs, fd, buf, len);
-  if (retLen == -1 && m->fs.err_code == SPIFFS_ERR_END_OF_OBJECT)
+  if (retLen < 0 && m->fs.err_code == SPIFFS_ERR_END_OF_OBJECT)
     return 0;
 
   if (retLen == -1) {
@@ -353,7 +353,7 @@ static int spiffsWrite(UosFile* file, const char *buf, int len)
   int retLen;
 
   retLen = SPIFFS_write(&m->fs, fd, (char*) buf, len);
-  if (retLen == -1) {
+  if (retLen < 0) {
 
     errno = EIO;
     return -1;
@@ -366,7 +366,7 @@ static int spiffsUnlink(const UosFS* fs, const char* fn)
 {
   SpiFS* m = (SpiFS*) fs;
 
-  if (SPIFFS_remove(&m->fs, fn) == -1) {
+  if (SPIFFS_remove(&m->fs, fn) < 0) {
 
     s32_t err = SPIFFS_errno(&m->fs);
     if (err == SPIFFS_ERR_NOT_FOUND)
@@ -387,7 +387,7 @@ static int spiffsSync(UosFile* file)
   SpiFS* m = (SpiFS*) file->fs;
   spiffs_file fd = file->fsPrivFd;
 
-  if (SPIFFS_fflush(&m->fs, fd) == -1) {
+  if (SPIFFS_fflush(&m->fs, fd) < 0) {
 
     errno = EIO;
     return -1;
@@ -401,7 +401,7 @@ static int spiffsStat(const UosFS* fs, const char* fn, UosFileInfo* st)
   SpiFS* m = (SpiFS*) fs;
   spiffs_stat sst;
 
-  if (SPIFFS_stat(&m->fs, fn, &sst) == -1) {
+  if (SPIFFS_stat(&m->fs, fn, &sst) < 0) {
 
     s32_t err = SPIFFS_errno(&m->fs);
     if (err == SPIFFS_ERR_NOT_FOUND)
@@ -425,7 +425,7 @@ static int spiffsFStat(UosFile* file, UosFileInfo* st)
   spiffs_file fd = file->fsPrivFd;
   spiffs_stat sst;
 
-  if (SPIFFS_fstat(&m->fs, fd, &sst) == -1) {
+  if (SPIFFS_fstat(&m->fs, fd, &sst) < 0) {
 
     s32_t err = SPIFFS_errno(&m->fs);
     if (err == SPIFFS_ERR_NOT_FOUND)
@@ -468,7 +468,7 @@ static int spiffsSeek(UosFile* file, int offset, int whence)
     break;
   }
 
-  if (SPIFFS_lseek(&m->fs, fd, offset, w) == -1) {
+  if (SPIFFS_lseek(&m->fs, fd, offset, w) < 0) {
 
     errno = EIO;
     return -1;
